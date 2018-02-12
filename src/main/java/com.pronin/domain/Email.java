@@ -1,4 +1,4 @@
-package com.pronin;
+package com.pronin.domain;
 
 import java.util.List;
 
