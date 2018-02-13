@@ -5,7 +5,6 @@ import com.pronin.service.EMailQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -14,7 +13,7 @@ import java.util.concurrent.BlockingQueue;
  * @author Alexander Pronin
  * @since 08/02/2018
  */
-@Service
+//@Service
 public class SimpleEmailQueue implements EMailQueue {
     private static final int DEFAULT_QUEUE_CAPACITY = 100;
     private static final Logger log = LoggerFactory.getLogger(SimpleEmailQueue.class);

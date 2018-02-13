@@ -41,7 +41,7 @@ public class MailgunRequest {
 
     @Autowired
     public MailgunRequest(RestTemplateBuilder builder) {
-        this.builder = builder.setConnectTimeout(10).setReadTimeout(10);
+        this.builder = builder.setConnectTimeout(10_000).setReadTimeout(10_000);
         headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
     }
