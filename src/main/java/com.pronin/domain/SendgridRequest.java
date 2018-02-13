@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -28,7 +29,7 @@ public class SendgridRequest {
 
     @Autowired
     public SendgridRequest(RestTemplateBuilder restTemplateBuilder) {
-        this.restTemplate = restTemplateBuilder.build();
+        this.restTemplate = restTemplateBuilder.setConnectTimeout(10).setReadTimeout(10).build();
     }
 
     @PostConstruct
@@ -38,7 +39,7 @@ public class SendgridRequest {
         headers.set("Authorization", "Bearer " + sendgridApiKey);
     }
 
-    public MailgunResponse send(Email email) {
+    public HttpStatus send(Email email) {
         String json =
                 "{\"personalizations\": [{\"to\": [{\"email\": \"apronin@me.com\"}, {\"email\": \"scherkka@gmail.com\"}]}]," +
                         "\"from\": {\"email\": \"test@example.com\"}," +
@@ -47,9 +48,7 @@ public class SendgridRequest {
 
         HttpEntity<String> objectHttpEntity = new HttpEntity<>(json, headers);
 
-        restTemplate.postForLocation(sendgridSendUrl, objectHttpEntity);
-//        System.out.println(t);
-        return null;
+        return restTemplate.postForEntity(sendgridSendUrl, objectHttpEntity, Void.class).getStatusCode();
     }
 
     private static class To {

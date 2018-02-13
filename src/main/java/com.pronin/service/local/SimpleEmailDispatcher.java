@@ -2,14 +2,18 @@ package com.pronin.service.local;
 
 import com.pronin.domain.Email;
 import com.pronin.domain.MailgunRequest;
-import com.pronin.domain.MailgunResponse;
 import com.pronin.domain.SendgridRequest;
 import com.pronin.service.EMailDispatcher;
 import com.pronin.service.EMailQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * @author Alexander Pronin
@@ -19,9 +23,10 @@ import org.springframework.stereotype.Component;
 public class SimpleEmailDispatcher implements EMailDispatcher {
     private static final Logger log = LoggerFactory.getLogger(SimpleEmailDispatcher.class);
 
+    private static final Executor exec = Executors.newFixedThreadPool(20);
     private final EMailQueue source;
-    private SendgridRequest sendgridRequest;
-    private MailgunRequest mailgunRequest;
+    private final SendgridRequest sendgridRequest;
+    private final MailgunRequest mailgunRequest;
 
     @Autowired
     public SimpleEmailDispatcher(EMailQueue source,
@@ -34,14 +39,22 @@ public class SimpleEmailDispatcher implements EMailDispatcher {
 
     @Override
     public void run() {
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
             Email email = source.take();
-            log.info("Fetching message from queue");
-
-            MailgunResponse response = mailgunRequest.send(email);
-
-            sendgridRequest.send(email);
-            log.info(response.toString());
+            exec.execute(() -> {
+                log.info("Fetching message from queue");
+                HttpStatus httpStatus;
+                try {
+                    httpStatus = mailgunRequest.send(email);
+                    if (httpStatus != HttpStatus.OK) {
+                        throw new RestClientException("Mailgun http status: " + httpStatus);
+                    }
+                } catch (RestClientException e) {
+                    log.error(e.getMessage(), e);
+                    httpStatus = sendgridRequest.send(email);
+                }
+                log.info("Response status: " + httpStatus.toString());
+            });
         }
     }
 }
