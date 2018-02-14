@@ -5,10 +5,8 @@ import com.pronin.service.EMailQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Alexander Pronin
@@ -18,13 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class SendMailController {
     private static final Logger log = LoggerFactory.getLogger(SendMailController.class);
 
+    private final EMailQueue eMailQueue;
+
     @Autowired
-    private EMailQueue eMailQueue;
+    public SendMailController(EMailQueue eMailQueue) {
+        this.eMailQueue = eMailQueue;
+    }
 
     @RequestMapping(name = "/send", method = RequestMethod.POST)
-    public String sendMailPost(@ModelAttribute Email email) {
+    @ResponseStatus(value = HttpStatus.OK)
+    public void sendMailPost(@ModelAttribute Email email) {
         log.debug(email.toString());
         eMailQueue.submit(email);
-        return email.toString();
     }
 }

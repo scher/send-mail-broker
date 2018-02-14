@@ -2,7 +2,7 @@ package com.pronin.service;
 
 import com.amazonaws.services.sqs.model.Message;
 import com.pronin.domain.MailGunRequest;
-import com.pronin.domain.SendgridRequest;
+import com.pronin.domain.SendGridRequest;
 import com.pronin.processing.EmailSendingTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,24 +23,27 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class SQSPoller implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(SQSPoller.class);
-    private static final Executor workers = Executors.newFixedThreadPool(20);
     private final EMailQueue source;
-    private final SendgridRequest sendgridRequest;
+    private final SendGridRequest sendGridRequest;
     private final MailGunRequest mailGunRequest;
+    private Executor workersPool;
     @Value("${sqs.polling.interval.seconds}")
     private int sqsPollingIntervalSeconds;
+    @Value("${send.mail.workers.number:10}")
+    private int sendMailWorkersNUmber;
 
     @Autowired
     public SQSPoller(EMailQueue source,
-                     SendgridRequest sendgridRequest,
+                     SendGridRequest sendGridRequest,
                      MailGunRequest mailGunRequest) {
         this.source = source;
         this.mailGunRequest = mailGunRequest;
-        this.sendgridRequest = sendgridRequest;
+        this.sendGridRequest = sendGridRequest;
     }
 
     @PostConstruct
     private void start() {
+        workersPool = Executors.newFixedThreadPool(sendMailWorkersNUmber);
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
                 this, 0, sqsPollingIntervalSeconds, TimeUnit.SECONDS);
     }
@@ -49,10 +52,10 @@ public class SQSPoller implements Runnable {
     public void run() {
         List<Message> emails = source.take();
         log.info("Received messages from SQS(" + emails.size() + "): " + emails.toString());
-        emails.forEach(message -> workers.execute(createTask(message)));
+        emails.forEach(message -> workersPool.execute(createTask(message)));
     }
 
     private EmailSendingTask createTask(Message message) {
-        return new EmailSendingTask(mailGunRequest, sendgridRequest, source, message);
+        return new EmailSendingTask(mailGunRequest, sendGridRequest, source, message);
     }
 }

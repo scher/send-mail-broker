@@ -4,7 +4,7 @@ import com.amazonaws.services.sqs.model.Message;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pronin.domain.Email;
 import com.pronin.domain.MailGunRequest;
-import com.pronin.domain.SendgridRequest;
+import com.pronin.domain.SendGridRequest;
 import com.pronin.service.EMailQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +22,14 @@ public class EmailSendingTask implements Runnable {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private final EMailQueue eMailQueue;
     private final Message message;
-    private MailGunRequest mailGunRequest;
-    private SendgridRequest sendgridRequest;
+    private final MailGunRequest mailGunRequest;
+    private final SendGridRequest sendGridRequest;
 
-    public EmailSendingTask(MailGunRequest mailGunRequest, SendgridRequest sendgridRequest,
+    public EmailSendingTask(MailGunRequest mailGunRequest, SendGridRequest sendGridRequest,
                             EMailQueue eMailQueue, Message message) {
 
         this.mailGunRequest = mailGunRequest;
-        this.sendgridRequest = sendgridRequest;
+        this.sendGridRequest = sendGridRequest;
         this.eMailQueue = eMailQueue;
         this.message = message;
     }
@@ -49,10 +49,9 @@ public class EmailSendingTask implements Runnable {
             } else {
                 throw new RestClientException("Failed to send message via Mailgun. HttpStatus: " + httpStatus);
             }
-
         } catch (RestClientException e) {
             log.error(e.getMessage(), e);
-            httpStatus = sendgridRequest.send(email);
+            httpStatus = sendGridRequest.send(email);
             if (httpStatus == HttpStatus.ACCEPTED) {
                 deleteMessage = true;
             } else {

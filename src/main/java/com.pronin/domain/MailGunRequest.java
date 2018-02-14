@@ -31,6 +31,8 @@ public class MailGunRequest {
 
     private final RestTemplateBuilder builder;
     private final HttpHeaders headers;
+    @Value("${connect.timeout.millis}")
+    private int connectTimeoutMillis;
     @Value("${mailgun.user}")
     private String mailgunUser;
     @Value("${mailgun.api.key}")
@@ -42,11 +44,12 @@ public class MailGunRequest {
     @Value("${mailgun.subject}")
     private String mailGunSubject;
 
+
     private RestTemplate restTemplate;
 
     @Autowired
     public MailGunRequest(RestTemplateBuilder builder) {
-        this.builder = builder.setConnectTimeout(10_000).setReadTimeout(10_000);
+        this.builder = builder.setConnectTimeout(connectTimeoutMillis).setReadTimeout(connectTimeoutMillis);
         headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
     }
@@ -63,6 +66,7 @@ public class MailGunRequest {
     }
 
     public HttpStatus send(Email email) {
+        log.info("Sending message via MailGun");
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("from", mailGunFrom);
         map.add("to", email.getRecipients().stream().collect(joining(",")));
@@ -70,6 +74,6 @@ public class MailGunRequest {
         map.add("text", email.getMessage());
 
         HttpEntity<Object> httpEntity = new HttpEntity<>(map, headers);
-        return restTemplate.postForEntity(mailGunSendUrl, httpEntity, MailgunResponse.class).getStatusCode();
+        return restTemplate.postForEntity(mailGunSendUrl, httpEntity, Void.class).getStatusCode();
     }
 }
