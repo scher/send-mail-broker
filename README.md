@@ -19,8 +19,8 @@ Solution handles multiple recipients and plain text message body.
 mailgun and sendgrid credentials. See application.properties.example
 
 3. Setup AWS SQS Credentials
-    3. Create a credentials file in the location ~/.aws with name "credentials".
-    3. Under the `default` profile fill in your Access Key ID and Secret Access Key:
+    1. Create a credentials file in the location ~/.aws with name "credentials".
+    2. Under the `default` profile fill in your Access Key ID and Secret Access Key:
         ```
           [default]
           aws_access_key_id =
