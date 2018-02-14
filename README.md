@@ -9,8 +9,6 @@ Application uses AWS SQS for messages queueing.
 
 Solution handles multiple recipients and plain text message body.
 
-sudo keytool -import -file Documents/projects/siteminder/src/main/resources/DigiCert\ Global\ Root\ G2.cer -keystore java/jre/lib/security/cacerts 
-
 ## Installation and Start
 
 1. build project:
