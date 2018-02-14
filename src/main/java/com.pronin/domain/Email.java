@@ -1,5 +1,6 @@
 package com.pronin.domain;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -7,7 +8,9 @@ import java.util.List;
  * @since 07/02/2018
  */
 public class Email {
+    @NotNull
     private List<String> recipients;
+    @NotNull
     private String message;
 
     public List<String> getRecipients() {

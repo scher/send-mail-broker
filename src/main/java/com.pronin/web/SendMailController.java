@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 /**
  * @author Alexander Pronin
  * @since 06/02/2018
@@ -25,7 +27,7 @@ public class SendMailController {
 
     @RequestMapping(name = "/send", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
-    public void sendMailPost(@ModelAttribute Email email) {
+    public void sendMailPost(@Valid @ModelAttribute Email email) {
         log.debug(email.toString());
         eMailQueue.submit(email);
     }
