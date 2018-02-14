@@ -1,9 +1,9 @@
 package com.pronin.service;
 
 import com.amazonaws.services.sqs.model.Message;
-import com.pronin.domain.MailGunRequest;
-import com.pronin.domain.SendGridRequest;
 import com.pronin.processing.EmailSendingTask;
+import com.pronin.web.MailGunRequest;
+import com.pronin.web.SendGridRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

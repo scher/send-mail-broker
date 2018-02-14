@@ -1,4 +1,4 @@
 siteminder.iml
 target
 .idea
-config
+config/application.properties
