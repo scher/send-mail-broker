@@ -26,8 +26,8 @@ import static java.util.stream.Collectors.joining;
  * @since 11/02/2018
  */
 @Component
-public class MailgunRequest {
-    private static final Logger log = LoggerFactory.getLogger(MailgunRequest.class);
+public class MailGunRequest {
+    private static final Logger log = LoggerFactory.getLogger(MailGunRequest.class);
 
     private final RestTemplateBuilder builder;
     private final HttpHeaders headers;
@@ -36,11 +36,16 @@ public class MailgunRequest {
     @Value("${mailgun.api.key}")
     private String mailgunPassword;
     @Value("${mailgun.send.url}")
-    private String mailgunSendUrl;
+    private String mailGunSendUrl;
+    @Value("${mailgun.from}")
+    private String mailGunFrom;
+    @Value("${mailgun.subject}")
+    private String mailGunSubject;
+
     private RestTemplate restTemplate;
 
     @Autowired
-    public MailgunRequest(RestTemplateBuilder builder) {
+    public MailGunRequest(RestTemplateBuilder builder) {
         this.builder = builder.setConnectTimeout(10_000).setReadTimeout(10_000);
         headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -59,12 +64,12 @@ public class MailgunRequest {
 
     public HttpStatus send(Email email) {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("from", "apronin123@me.com");
+        map.add("from", mailGunFrom);
         map.add("to", email.getRecipients().stream().collect(joining(",")));
-        map.add("subject", "MailGun");
+        map.add("subject", mailGunSubject);
         map.add("text", email.getMessage());
 
         HttpEntity<Object> httpEntity = new HttpEntity<>(map, headers);
-        return restTemplate.postForEntity(mailgunSendUrl, httpEntity, MailgunResponse.class).getStatusCode();
+        return restTemplate.postForEntity(mailGunSendUrl, httpEntity, MailgunResponse.class).getStatusCode();
     }
 }

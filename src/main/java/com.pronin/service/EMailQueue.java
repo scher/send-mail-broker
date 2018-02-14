@@ -1,6 +1,9 @@
 package com.pronin.service;
 
+import com.amazonaws.services.sqs.model.Message;
 import com.pronin.domain.Email;
+
+import java.util.List;
 
 /**
  * @author Alexander Pronin
@@ -9,5 +12,7 @@ import com.pronin.domain.Email;
 public interface EMailQueue {
     boolean submit(Email email);
 
-    Email take();
+    List<Message> take();
+
+    void deleteMessage(String receiptHandler);
 }

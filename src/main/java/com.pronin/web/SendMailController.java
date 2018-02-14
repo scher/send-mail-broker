@@ -2,7 +2,6 @@ package com.pronin.web;
 
 import com.pronin.domain.Email;
 import com.pronin.service.EMailQueue;
-import com.pronin.service.local.SimpleEmailQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class SendMailController {
-    private static final Logger log = LoggerFactory.getLogger(SimpleEmailQueue.class);
+    private static final Logger log = LoggerFactory.getLogger(SendMailController.class);
 
     @Autowired
     private EMailQueue eMailQueue;
