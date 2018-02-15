@@ -55,6 +55,7 @@ SQS Poller periodically fetches messages from SQS service and sends emails.
 
 ## Todo
 
+* Leverage AWS Lambda for SQS Polling and Send mail workers 
 * Configure SQS Dead-Letter queue, to get rid of invalid messages. 
 * Limit size of input message.
 * Provide tests.
