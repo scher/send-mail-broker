@@ -2,3 +2,5 @@ siteminder.iml
 target
 .idea
 config/application.properties
+config/siteminder.ec2.pem.txt
+problem.pdf
