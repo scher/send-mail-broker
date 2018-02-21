@@ -1,4 +1,4 @@
-curl -s --user 'api:key-cd175cfa8bbae74fdbbe0ce22fccbc27' \
+curl -s --user 'api:key-here' \
     https://api.mailgun.net/v3/sandbox1873eee421bf417cb999a23dcc2a5718.mailgun.org/messages \
         -F from='Mailgun Sandbox <apronin@me1.com>' \
         -F to='Alexander Pronin <scherkka@gmail.com>, AP <apronin@me.com>' \
